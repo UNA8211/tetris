@@ -10,10 +10,7 @@
  */
 public class Piece {
     
-<<<<<<< HEAD
     public Piece(int number){
         
     }
-=======
->>>>>>> origin/master
 }

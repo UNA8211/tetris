@@ -1,20 +1,15 @@
 
-<<<<<<< HEAD
+
 import java.awt.Dimension;
-=======
->>>>>>> origin/master
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JPanel;
-<<<<<<< HEAD
 import javax.swing.Timer;
-=======
->>>>>>> origin/master
-/*
- * To change this license header, choose License Headers in Project Properties.
+
+/* To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -24,7 +19,6 @@ import javax.swing.Timer;
  * @author UNA
  */
 public class Board extends JPanel implements ActionListener{
-<<<<<<< HEAD
     private int startX = 500;
     private int rows = 22;
     private int cols = 10;
@@ -83,45 +77,20 @@ public class Board extends JPanel implements ActionListener{
         }
         g.fillRect(currX, currY, 45, 45);   
     }
-    
-    public void clear(){
-        
-    }
-    
+
     public void setPiece(){
         
     }
 
     public void actionPerformed(ActionEvent e) {
 
-=======
-    
-    private boolean[][] board = new boolean[20][10];
-    Piece piece = new Piece();
-    public Board(){
-        draw();
-    }
-    
-    public void move(int posX, int posY){
-        
-    }
-    
-    public void draw(){
-        Graphics g = null;
-        g.fillRect(40, 60, 40, 40);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
->>>>>>> origin/master
     }
     
     class KeyPress extends KeyAdapter{
         public void keyPressed(KeyEvent e){
             int key = e.getKeyCode();
             switch(key){
-<<<<<<< HEAD
+
                 case KeyEvent.VK_RIGHT:
                     movePiece(currX + 45,currY);
                     break;
@@ -131,12 +100,8 @@ public class Board extends JPanel implements ActionListener{
                 case KeyEvent.VK_DOWN:
                     movePiece(currX,currY + 45);
                     break;
-=======
-                case KeyEvent.VK_LEFT:
-                    move(0,0);
->>>>>>> origin/master
             }
         }
     }
-    
 }
+   
