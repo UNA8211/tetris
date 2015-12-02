@@ -7,8 +7,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import sun.audio.AudioData;
+import sun.audio.AudioPlayer;
+import sun.audio.AudioStream;
 
 /* To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -22,7 +35,7 @@ public class Board extends JPanel implements ActionListener {
 
     private int startX = 500;
     private int rows = 22;
-    private int cols = 10;
+    private int cols = 11;
 
     private int score = 0;
 
@@ -39,11 +52,28 @@ public class Board extends JPanel implements ActionListener {
     public Board() {
         setFocusable(true);
         setPreferredSize(new Dimension((cols * 45) + 350, (rows * 45)));
+        for (int i = 1; i < cols; i++) {
+            board[i][rows - 1] = true;
+        }
+        music();
         timer = new Timer(600, this);
         timer.start();
 
         addKeyListener(new KeyPress());
+    }
 
+    public void music() {
+        try {
+            String music = "C:\\Users\\thema_000\\Documents\\NetBeansProjects\\TetrisJava\\src\\resources\\Tetris.wav";
+            AudioInputStream in = AudioSystem.getAudioInputStream(new File(music));
+            Clip clip = AudioSystem.getClip();
+            clip.open(in);
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        
+        
     }
 
     public void start() {
@@ -53,16 +83,23 @@ public class Board extends JPanel implements ActionListener {
         timer.start();
     }
 
+    public void place(int currX, int nextY) {
+        board[currX / 45][(nextY - 45) / 45] = true;
+        checkRowFilled();
+    }
+
     public boolean movePiece(int nextX, int nextY) {
-        if (nextX < 0 || nextX > (cols * 45)) {
+        if (nextX < 0 || nextX >= (cols * 45)) {
             repaint();
             return false;
-        } else if (nextY > (rows * 45) - extraSpace) {
+        } else if (nextY > (rows * 45) - extraSpace || board[currX / 45][nextY / 45] == true) {
             currY = 0;
-            repaint();
             piecePlaced();
+            place(currX, nextY);
+            repaint();
             return false;
         }
+
         currX = nextX;
         currY = nextY;
         repaint();
@@ -72,8 +109,8 @@ public class Board extends JPanel implements ActionListener {
     public void rotate() {
 
     }
-    
-    public void gravity(){
+
+    public void gravity() {
         currY += 45;
         repaint();
     }
@@ -81,7 +118,7 @@ public class Board extends JPanel implements ActionListener {
     public void paint(Graphics g) {
         g.clearRect(0, 0, (cols * 45) + 350, (rows * 45));
         g.setColor(new Color(226, 226, 226));
-        g.fillRect(0, 0, (cols * 45) + extraSpace, rows * 45);
+        g.fillRect(0, 0, (cols * 45), rows * 45);
         g.fillRect((cols * 45) + extraSpace + 50, 0, 200, 50);
         g.setColor(Color.black);
         g.setFont(new Font("Serif", Font.PLAIN, 20));
@@ -89,13 +126,21 @@ public class Board extends JPanel implements ActionListener {
         g.drawString(Integer.toString(score), (cols * 45) + extraSpace + 115, 40);
         int curr = 0;
         for (int i = 0; i < rows + 1; i++) {
-            g.drawLine(0, curr, (cols * 45) + extraSpace, curr);
+            g.drawLine(0, curr, (cols * 45), curr);
             curr += extraSpace;
         }
         curr = extraSpace;
-        for (int i = 0; i < cols + 1; i++) {
+        for (int i = 0; i < cols; i++) {
             g.drawLine(curr, 0, curr, (rows * 45));
             curr += extraSpace;
+        }
+        for (int i = 0; i < cols; i++) {
+            for (int j = 0; j < rows; j++) {
+//                g.drawString("0", i * 45, j * 45);
+                if (board[i][j] == true) {
+                    g.fillRect(i * 45, j * 45, 45, 45);
+                }
+            }
         }
         g.fillRect(currX, currY, 45, 45);
     }
@@ -103,13 +148,34 @@ public class Board extends JPanel implements ActionListener {
     public void setPiece() {
 
     }
-    
-    public void piecePlaced(){
-        score += 100;
+
+    public void piecePlaced() {
+        score += 50;
     }
-    
-    public void rowFilled(int numRows){
-        score += (1000 * (numRows == 4 ? 5: numRows));
+
+    public void checkRowFilled() {
+        int rowsFilled = 0;
+        for (int i = 0; i < rows; i++) {
+            int counter = 0;
+            for (int j = 0; j < cols; j++) {
+                if (board[j][i] == false) {
+                    break;
+                } else {
+                    counter++;
+                }
+            }
+            if (counter == cols) {
+                for (int j = 0; j < cols; j++) {
+                    board[j][i] = false;
+                }
+                rowsFilled++;
+            }
+        }
+        rowFilled(rowsFilled);
+    }
+
+    public void rowFilled(int numRows) {
+        score += (1000 * (numRows == 4 ? 5 : numRows));
     }
 
     public void actionPerformed(ActionEvent e) {
